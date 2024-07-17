@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     container_name: frontend
-    image: arctestsa.azurecr.io/frontend:${FRONTEND_TAG}
+    image: arctestsa.azurecr.io/frontend:d3f81f4fde77b8de14769ffbbafdbb725944d5ed
     ports:
       - 80:80
   
