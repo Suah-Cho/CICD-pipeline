@@ -1,9 +1,4 @@
-# cicd
-CICD 테스트 레포지터리
-
-```plantuml
-
-@startuml
+@@startuml
 
 actor dev
 
@@ -13,11 +8,8 @@ rectangle "Github" {
     rectangle cicd_Repo [
         cicd repo
         ---
-         |---.github
-         |      |---workflows
-         |      |      |---deploy.yml
-         |---resource
-         |      |---docker-compose.yml
+         ㄴ.github/workflows/deploy.yml
+         ㄴ/docker-compose.yml
     ]
 
     "Frontend Repo" --> cicd_Repo : 3. image tag change
@@ -49,6 +41,4 @@ dev --> "Backend Repo" : 1. main branch push
 "Frontend-ACR" --> "frontend container" : 5. image pull
 "Backend-ACR" --> "backend container" : 5. image pull
 
-@enduml
-
-```
+@@enduml

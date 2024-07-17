@@ -6,10 +6,12 @@ services:
     image: arctestsa.azurecr.io/frontend:d3f81f4fde77b8de14769ffbbafdbb725944d5ed
     ports:
       - 80:80
+    restart: always
   
   backend:
     container_name: backend
     image: arctestsa.azurecr.io/backend:6df878cfa253d666d11185f644b2ad15193efc7b
     ports:
       - 8000:8000
+    restart: always
     
