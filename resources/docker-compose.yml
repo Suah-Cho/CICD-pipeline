@@ -9,7 +9,7 @@ services:
   
   backend:
     container_name: backend
-    image: arctestsa.azurecr.io/backend:${BACKEND_TAG}
+    image: arctestsa.azurecr.io/backend:1ada06f93ff09d22177e2ad9457d374be1dba4d2
     ports:
       - 8000:8000
     
