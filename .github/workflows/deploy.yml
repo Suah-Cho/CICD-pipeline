@@ -1,6 +1,9 @@
 name: Deploy to Azure VM
 
 on:
+    push:
+        branches:
+            - main
     workflow_dispatch:
         inputs:
             continue:
