@@ -12,14 +12,23 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+
+            - name: Set up SSH agent
+              uses: webfactory/ssh-agent@v0.5.3
+              with:
+                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
             
-            - name: Restart Docker container
+            - name: Copy files to Azure VM
+              run: |
+                scp -r ./resources/docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/azureuser/cicd
+            
+            - name: Deploy
               uses: appleboy/ssh-action@master
               with:
                 host: ${{ secrets.SSH_HOST }}
                 username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
-                  mkdir -p /home/azureuser/cicd
-                  rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./resources/docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/azureuser/cicd
+                  cd /home/azureuser/cicd
+                  docker compose up -d
                 
