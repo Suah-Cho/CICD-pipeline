@@ -16,7 +16,7 @@ jobs:
             - name: Add known hosts
               run: |
                 mkdir -p ~/.ssh
-                ssh-keyscan ${{ secrets.SSH_PRIVATE_KEY }} >> ~/.ssh/known_hosts
+                ssh-keyscan -H ${{ secrets.SSH_PRIVATE_KEY }} >> ~/.ssh/known_hosts
 
             - name: Set up SSH agent
               uses: webfactory/ssh-agent@v0.5.3
