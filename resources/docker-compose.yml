@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  frontend:
+    container_name: frontend
+    image: arctestsa.azurecr.io/frontend:${FRONTEND_TAG}
+    ports:
+      - 80:80
+  
+  backend:
+    container_name: backend
+    iamge: arctestsa.azurecr.io/backend:${BACKEND_TAG}
+    ports:
+      - 8000:8000
+    
