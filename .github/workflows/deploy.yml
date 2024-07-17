@@ -20,11 +20,11 @@ jobs:
                 username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
-                  if [-d '/home/azureuser/cicd']; then
+                  if [ -d '/home/azureuser/cicd' ]; then
                     cd /home/azureuser/cicd
                     git pull
                   else
-                    git clone https://github.com/${{ github.repository }}.git
+                    git clone https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git /home/azureuser/cicd
                     cd /home/azureuser/cicd
                   fi
                 
