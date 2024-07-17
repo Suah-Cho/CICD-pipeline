@@ -13,20 +13,6 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v2
             
-            - name: Add known hosts
-              run: |
-                mkdir -p ~/.ssh
-                ssh-keyscan -H ${{ secrets.SSH_PRIVATE_KEY }} >> ~/.ssh/known_hosts
-
-            - name: Set up SSH agent
-              uses: webfactory/ssh-agent@v0.5.3
-              with:
-                ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-            
-            - name: Copy files to Azure VM
-              run: |
-                scp -r ./resources/docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/azureuser/cicd
-            
             - name: Deploy
               uses: appleboy/ssh-action@master
               with:
@@ -34,6 +20,11 @@ jobs:
                 username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
-                  cd /home/azureuser/cicd
-                  docker compose up -d
+                  if [-d '/home/azureuser/cicd']; then
+                    cd /home/azureuser/cicd
+                    git pull
+                  else
+                    git clone https://github.com/${{ github.repository }}.git
+                    cd /home/azureuser/cicd
+                  fi
                 
