@@ -4,33 +4,25 @@ on:
     push:
         branches:
             - main
-    workflow_dispatch:
-        inputs:
-            continue:
-                description: 'Do you want to continue?'
-                required: true
-                default: 'yes'
 
 jobs:
-    notify:
+    build:
         runs-on: ubuntu-latest
-
-        steps:
-            - name: Send Slack Notification
-              env:
-                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-              run: |
-                if [ "${{ github.event.inputs.continue }}" == "yes" ]; then
-                  curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment will continue."}' $SLACK_WEBHOOK_URL
-                else
-                  curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment has been halted by the user."}' $SLACK_WEBHOOK_URL
-                  exit 1
-                fi
-    
-    deploy:
-        runs-on: ubuntu-latest
-        needs: notify
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+            
+            - name: Deploy to Azure VM
+              uses: appleboy/ssh-action@master
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USERNAME }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                script: |
+                    mkdir -p  /home/azureuser/cicd
+                    rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./resources/docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/azureuser/cicd
+                    ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
+                      cd /home/azureuser/cicd
+                      docker compose up -d
+                    EOF
