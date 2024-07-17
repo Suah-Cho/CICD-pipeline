@@ -13,14 +13,13 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v2
             
-            - name: Setup SSH
-              run: |
-                echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
-                chmod 600 ssh_key.pem
-            
             - name: Restart Docker container
               uses: appleboy/ssh-action@master
               with:
                 host: ${{ secrets.SSH_HOST }}
                 username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
+                script: |
+                  mkdir -p /home/azureuser/cicd
+                  rsync -avz -e "ssh -o StrictHostKeyChecking=no" ./resources/docker-compose.yml ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/azureuser/cicd
+                
