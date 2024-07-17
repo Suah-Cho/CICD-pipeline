@@ -18,7 +18,7 @@ jobs:
         steps:
             - name: Send Slack Notification
               env:
-                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
               run: |
                 if [ "${{ github.event.inputs.continue }}" == "yes" ]; then
                   curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment will continue."}' $SLACK_WEBHOOK_URL
