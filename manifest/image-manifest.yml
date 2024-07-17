@@ -1,7 +1,7 @@
 images:
   - name: frontend
     newName: arctestsa.azurecr.io/frontend
-    newTag: 58e36c87fdddfe820e2bf5125acbd3b13b5c8941
+    newTag: 250f7626af37a46f32a5aca47c40daaeb42c6100
     
   - name: backend
     newName: arctestsa.azurecr.io/backend
