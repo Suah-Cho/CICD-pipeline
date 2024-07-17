@@ -12,6 +12,11 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+            
+            - name: Add known hosts
+              run: |
+                mkdir -p ~/.ssh
+                ssh-keyscan ${{ secrets.SSH_PRIVATE_KEY }} >> ~/.ssh/known_hosts
 
             - name: Set up SSH agent
               uses: webfactory/ssh-agent@v0.5.3
