@@ -18,13 +18,9 @@ jobs:
                 echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
                 chmod 600 ssh_key.pem
             
-            - name: Deploy to Azure VM
-              run: |
-                ssh -i ssh_key.pem -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "mkdir -p /home/azureuser/cicd"
-
-                rsync -avz -e "ssh -i sua-vm_key.pem -o StrictHostKeyChecking=no" ./resources/docker-compose.yml azureuser@40.82.144.200:/home/azureuser/cicd
-
-                ssh -i ssh_key.pem -o StrictHostKeyChecking=no ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'EOF'
-                  cd /home/azureuser/cicd
-                  docker compose up -d
-                EOF
+            - name: Restart Docker container
+              uses: appleboy/ssh-action@master
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USERNAME }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
