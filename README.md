@@ -13,15 +13,12 @@ rectangle "Github" {
     rectangle cicd_Repo [
         cicd repo
         ---
-         |---.github
-         |      |---workflows
-         |      |      |---deploy.yml
-         |---resource
-         |      |---docker-compose.yml
+         ㄴ.github/workflows/deploy.yml
+         ㄴ/docker-compose.yml
     ]
 
-    "Frontend Repo" --> cicd_Repo : 3. image tag change
-    "Backend Repo" --> cicd_Repo : 3. image tag change
+    "Frontend Repo" --> cicd_Repo : 3. image tag change and action trigger 
+    "Backend Repo" --> cicd_Repo : 3. image tag change and action trigger
 }
 
 cloud "Azure" {
