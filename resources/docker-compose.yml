@@ -10,8 +10,7 @@ services:
   
   backend:
     container_name: backend
-    image: arctestsa.azurecr.io/backend:7b840969017abbf9d87aa068a0321dc9cc40abc2
+    image: arctestsa.azurecr.io/backend:v0.1
     ports:
       - 8000:8000
     restart: always
-  
