@@ -115,4 +115,6 @@ cicd_Repo --> "Azure VM" : 6. git pull
 
 ```
 
-| Event Grid만으로 CD를 진행할 수 없다. CD를 위해 시작점이 되는 것일 뿐. 이 때, Logic App이나 Function App이 중간 다리가 되어야한다. 여기서 의문점은 Logic App의 경우 트리거가 될 때마다 비용이 청구된다. Function App의 경우는 트리거가 하나 더 생성되었다고 비용이 청구되는 것은 아니지만, 현재 Function App에서 오류가 나면 slack으로 알림이 오도록 구현되어 있다. 그럼 CD관련 로그도 Function App의 애플리케이션 오류와 함께 출력이 되는 것이기 때문에, 알림을 받는 데 불편함이 있을 것이라고 생각한다. Function App과 Application Insights를 free plan으로 새로 생성한다고 하더라도 관리 복잡성이 늘어난다. 
+
+- Event Grid만으로 CD를 진행할 수 없다. CD를 위해 시작점이 되는 것일 뿐. 이 때, Logic App이나 Function App이 중간 다리가 되어야한다. 여기서 의문점은 Logic App의 경우 트리거가 될 때마다 비용이 청구된다. Function App의 경우는 트리거가 하나 더 생성되었다고 비용이 청구되는 것은 아니지만, 현재 Function App에서 오류가 나면 slack으로 알림이 오도록 구현되어 있다. 그럼 CD관련 로그도 Function App의 애플리케이션 오류와 함께 출력이 되는 것이기 때문에, 알림을 받는 데 불편함이 있을 것이라고 생각한다. Function App과 Application Insights를 free plan으로 새로 생성한다고 하더라도 관리 복잡성이 늘어난다. 
+- 만약, VM안에 컨테이너가 잘못되어 삭제한 경우, 현재 어떤 이미지를 이용하여 배포하였는지 모를 수 있다. 버전 관리를 하려면 vm내부 스크립트에서 docker compose 이미지 태그를 Event Grid로부터 받은 값으로 변경한 후 commit, push하는 과정이 있어야한다.

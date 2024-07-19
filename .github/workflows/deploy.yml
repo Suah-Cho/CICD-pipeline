@@ -22,6 +22,7 @@ jobs:
                 username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
+                  az acr login --name ${{ secrets.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
                   if [ -d '/home/azureuser/cicd' ]; then
                     cd /home/azureuser/cicd
                     git pull
