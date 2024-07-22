@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     container_name: frontend
-    image: arctestsa.azurecr.io/frontend:c7f3fe5aa5fb91d537d8ace1d1c38737505ec070
+    image: arctestsa.azurecr.io/frontend:8eb7b88f6496979090e5bf61589f54b2c2fc5eef
     ports:
       - 80:80
     restart: always
