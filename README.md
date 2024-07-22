@@ -105,7 +105,7 @@ dev --> "Backend Repo" : 1. main branch push
 "Frontend Repo" ---> "Frontend-ACR" : 2. image upload
 "Backend Repo" ---> "Backend-ACR" : 2. image upload
 
-"ACR" <--> "Event Grid" : 3. Watching changes and Event Trigger
+"ACR" <--> "Event Grid" : 3. Watching changes
 "Event Grid" --> "Logic App or Function App" : 4. excuted for running scripts in VM
 "Logic App or Function App" --> "Azure VM" : 5. run scripts
 cicd_Repo --> "Azure VM" : 6. git pull
