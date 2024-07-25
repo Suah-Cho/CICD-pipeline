@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: arctestsa.azurecr.io/frontend:2687cf2ef1d10003ced4895eaf94caa2f30aba86
+    image: arctestsa.azurecr.io/frontend:e82ffeede7126bf9eb6fe29cb898234f101e25f2
 
     ports:
       - 80:80
