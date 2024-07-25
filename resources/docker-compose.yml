@@ -9,7 +9,7 @@ services:
     restart: always
   
   backend:
-    image: arctestsa.azurecr.io/backend:${backend_tag}
+    image: arctestsa.azurecr.io/backend:v0.2
     ports:
       - 8000:8000
     restart: always
