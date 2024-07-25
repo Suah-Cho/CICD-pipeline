@@ -12,8 +12,8 @@ rectangle "Github" {
          ㄴ/docker-compose.yml
     ]
 
-    "Frontend Repo" --> cicd_Repo : 3. image tag change and action trigger 
-    "Backend Repo" --> cicd_Repo : 3. image tag change and action trigger
+    "Frontend Repo" --[#Red]> cicd_Repo : 3. image tag change and action trigger 
+    "Backend Repo" --[#Red]> cicd_Repo : 3. image tag change and action trigger
 }
 
 cloud "Azure" {
@@ -30,15 +30,15 @@ cloud "Azure" {
     }
 }
 
-dev --> "Frontend Repo" : 1. main branch push
-dev --> "Backend Repo" : 1. main branch push
+dev --[#Red]> "Frontend Repo" : 1. main branch push (Github Actions Trigger)
+dev --[#Red]> "Backend Repo" : 1. main branch push (Github Actions Trigger)
 
-"Frontend Repo" ---> "Frontend-ACR" : 2. image upload
-"Backend Repo" ---> "Backend-ACR" : 2. image upload
+"Frontend Repo" ---[#Red]> "Frontend-ACR" : 2. image upload
+"Backend Repo" ---[#Red]> "Backend-ACR" : 2. image upload
 
-"cicd_Repo" --> "Azure VM" : 4. git pull
+"cicd_Repo" --[#Blue]> "Azure VM" : Github Actions Trigger
 
-"Frontend-ACR" --> "frontend container" : 5. image pull
-"Backend-ACR" --> "backend container" : 5. image pull
+"frontend container" --[#Blue]> "frontend container" : 4. run script(git pull & docker-compose up)
+"backend container" --[#Blue]> "backend container" : 4. run script(git pull & docker-compose up)
 
 @@enduml
