@@ -8,10 +8,9 @@ services:
     restart: always
   
   croft-api-server:
-    image: arctestsa.azurecr.io/backend:72cb4902e8ab66820eee26f9e6b40ad8c5e5f78a
+    image: arctestsa.azurecr.io/backend:63c41d60ddb891551d11bcb8b634aebf55265b8e
     ports:
       - 8000:8000
     restart: always
     env_file:
       - /home/azureuser/cicd/resources/.env
-      
