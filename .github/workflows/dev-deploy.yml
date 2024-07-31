@@ -12,6 +12,19 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+
+            - name: Create .env file
+              run: |
+                echo "API_MODE=${{ secrets.API_MODE }}" >> .env
+
+            - name: Move .env file to VM
+              uses: appleboy/scp-action@master
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USERNAME }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                source: ".env"
+                target: "/home/azureuser/cicd/resources/"
             
             - name: Deploy
               uses: appleboy/ssh-action@master
@@ -21,16 +34,15 @@ jobs:
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
                   az acr login --name ${{ secrets.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
+                  cat /home/azureuser/cicd/resources/.env
                   if [ -d '/home/azureuser/cicd' ]; then
                     cd /home/azureuser/cicd
                     git pull origin dev
                     cd resources
-                    docker compose up -d
+                    docker compose up -d 
                   else
                     git clone -b dev https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git /home/azureuser/cicd
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
                   fi
-              env:
-                API_MODE: ${{ secrets.API_MODE }}
                 
