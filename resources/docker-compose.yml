@@ -1,14 +1,16 @@
 version: '3.8'
 
 services:
-  frontend:
-    image: arctestsa.azurecr.io/frontend:96565f2c157eb5e3b8fcf30c304aace6fb7df1a7
+  nginx:
+    image: arctestsa.azurecr.io/frontend:d341c7f56bd05b26996dad94f3c4a7fddff8a18f
     ports:
       - 80:80
     restart: always
   
-  backend:
-    image: arctestsa.azurecr.io/backend:v0.2
+  croft-api-server:
+    image: arctestsa.azurecr.io/backend:0720ac425665365e59087494d7ffd2d6d7c20281
     ports:
       - 8000:8000
     restart: always
+    environment:
+      - API_MODE=${API_MODE}
