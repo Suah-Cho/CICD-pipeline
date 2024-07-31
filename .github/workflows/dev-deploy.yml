@@ -23,11 +23,11 @@ jobs:
                   az acr login --name ${{ secrets.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
                   if [ -d '/home/azureuser/cicd' ]; then
                     cd /home/azureuser/cicd
-                    git pull 
+                    git pull origin dev
                     cd resources
                     docker compose up -d
                   else
-                    git clone https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git /home/azureuser/cicd
+                    git clone -b dev https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git /home/azureuser/cicd
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
                   fi
