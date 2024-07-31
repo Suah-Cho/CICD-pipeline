@@ -8,7 +8,7 @@ services:
     restart: always
   
   croft-api-server:
-    image: arctestsa.azurecr.io/backend:8663894eaa98c5b5cb931563be21d960dbb8c00a
+    image: arctestsa.azurecr.io/backend:cf1abee68c01094628260b9c9f968ad87c72bddd
     ports:
       - 8000:8000
     restart: always
