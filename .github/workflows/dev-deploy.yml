@@ -31,4 +31,6 @@ jobs:
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
                   fi
+              env:
+                API_MODE: ${{ secrets.API_MODE }}
                 
