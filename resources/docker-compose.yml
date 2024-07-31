@@ -12,5 +12,5 @@ services:
     ports:
       - 8000:8000
     restart: always
-    env_file:
-      - /home/azureuser/cicd/resources/.env
+    environment:
+      - API_MODE=${API_MODE}
