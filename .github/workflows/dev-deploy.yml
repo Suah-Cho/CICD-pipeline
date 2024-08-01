@@ -47,6 +47,7 @@ jobs:
                   fi    
     
             - name: Notify message to Slack
+              if: always()
               uses: rtCamp/action-slack-notify@v2
               env:
                 SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
