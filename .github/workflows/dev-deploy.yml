@@ -48,7 +48,7 @@ jobs:
             
             - name: Get Change Files
               id: changes
-              run: echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+              run: echo "CHANGED_FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})" >> $GITHUB_ENV
 
             - name: Post to a Slack channel
               id: slack
