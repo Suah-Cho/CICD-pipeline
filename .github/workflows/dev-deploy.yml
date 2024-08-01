@@ -45,16 +45,12 @@ jobs:
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
                   fi
-            
-            - name: Get Change Files
-              id: changes
-              run: echo "CHANGED_FILES=$(git diff --name-only ${{ github.sha }}^ ${{ github.sha }})" >> $GITHUB_ENV
 
             - name: Post to a Slack channel
               id: slack
               uses: slackapi/slack-github-action@v1.26.0
               with:
                 channel-id: 배포
-                slack-message: "Deploy Result: ${{ job.status }}\nCommit Message: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}\nChanged Filed: ${{ env.CHANGED_FILES }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                slack-message: "Deploy Result: ${{ job.status }}\nCommit Message: ${{ github.event.head_commit.message }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
               env:
                 SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
