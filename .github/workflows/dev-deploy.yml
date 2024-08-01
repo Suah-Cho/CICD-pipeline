@@ -57,6 +57,6 @@ jobs:
               uses: slackapi/slack-github-action@v1.26.0
               with:
                 channel-id: 배포
-                slack-message: "Deploy Result: ${{ job.status }}\nCommit Message: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n${{ job.status == 'failure' && env.ERROR_MESSAGE != '' && 'Error: ' + env.ERROR_MESSAGE || '' }}"
+                slack-message: "Deploy Result: ${{ job.status }}\nCommit Message: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n${{ env.ERROR_MESSAGE && format('Error: {0}', env.ERROR_MESSAGE) || '' }}"
               env:
                 SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
