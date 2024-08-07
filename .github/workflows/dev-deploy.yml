@@ -56,8 +56,7 @@ jobs:
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
                   cd /home/azureuser/cicd/resources
-                  git checkout @{-1}
-                  git reset --hard
+                  git revert --no-commit HEAD^
                   cat docker-compose.yml
                   docker compose up -d
     
