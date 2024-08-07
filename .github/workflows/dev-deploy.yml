@@ -46,7 +46,6 @@ jobs:
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
                   fi    
-              continue-on-error: true
 
             - name: Rollback on Failure
               if: failure()
