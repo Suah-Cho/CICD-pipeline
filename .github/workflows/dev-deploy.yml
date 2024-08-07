@@ -28,6 +28,7 @@ jobs:
             
             - name: Deploy
               uses: appleboy/ssh-action@master
+              id: deploy
               with:
                 host: ${{ secrets.SSH_HOST }}
                 username: ${{ secrets.SSH_USERNAME }}
@@ -71,4 +72,4 @@ jobs:
                 SLACK_USERNAME: "Github CD"
                 SLACK_ICON: ":rocket:"
                 SLACK_TITLE: "CD dev"
-                SLACK_MESSAGE: ":rocket: Deploy Result: ${{ job.status }}\nCommit Message: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                SLACK_MESSAGE: ":rocket: Deploy Result: ${{ steps.deploy.conclusion }}\nCommit Message: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
