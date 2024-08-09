@@ -6,6 +6,32 @@ on:
             - dev
 
 jobs:
+    check-tag:
+        runs-on: ubuntu-latest
+      
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+              
+            - name: image tags
+              id: tags
+              run: |
+                frontend_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                backend_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                git checkout HEAD~1
+                frontend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                backend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                echo "FRONTEND_TAG=${frontend_tag}" >> $GITHUB_ENV
+                echo "BACKEND_TAG=${backend_tag}" >> $GITHUB_ENV
+                echo "FRONTEND_PREVIOUS_TAG=${frontend_previous_tag}" >> $GITHUB_ENV
+                echo "BACKEND_PREVIOUS_TAG=${backend_previous_tag}" >> $GITHUB_ENV
+            
+            - name: Check if tags are rollback
+              run: |
+                echo "FRONTEND_TAG=${{ env.FRONTEND_TAG }}"
+                echo "BACKEND_TAG=${{ env.BACKEND_TAG }}"
+
+
     build:
         runs-on: ubuntu-latest
 
@@ -46,19 +72,6 @@ jobs:
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
                   fi    
-
-            - name: Rollback on Failure
-              if: failure()
-              uses: appleboy/ssh-action@master
-              with:
-                host: ${{ secrets.SSH_HOST }}
-                username: ${{ secrets.SSH_USERNAME }}
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
-                script: |
-                  cd /home/azureuser/cicd/resources
-                  git revert --no-commit HEAD^
-                  cat docker-compose.yml
-                  docker compose up -d
     
             - name: Notify message to Slack
               if: always()
