@@ -55,6 +55,8 @@ jobs:
                         backend_rollback: '${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}'
                       }
                     })
+              env:
+                GITHUB_TOKEN: ${{ secrets.PAT }}
 
 
 
