@@ -72,19 +72,6 @@ jobs:
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
                   fi    
-
-            - name: Rollback on Failure
-              if: failure()
-              uses: appleboy/ssh-action@master
-              with:
-                host: ${{ secrets.SSH_HOST }}
-                username: ${{ secrets.SSH_USERNAME }}
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
-                script: |
-                  cd /home/azureuser/cicd/resources
-                  git revert --no-commit HEAD^
-                  cat docker-compose.yml
-                  docker compose up -d
     
             - name: Notify message to Slack
               if: always()
