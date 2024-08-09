@@ -37,6 +37,23 @@ jobs:
                 if dpkg --compare-versions "${{ steps.tags.outputs.BACKEND_TAG }}" lt "${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}"; then
                   echo "BACKEND_ROLLBACK=true" >> $GITHUB_ENV
                 fi
+            
+            - name: Trigger rollback.yml
+              uses: actions/github-script@v4
+              with:
+                script: |
+                    github.rest.actions.createWorkflowDispatch({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      workflow_id: 'rollback.yml',
+                      ref: context.ref,
+                      inputs: {
+                        frontend_tag: '${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}',
+                        backend_tag: '${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}',
+                        frontend_rollback: '${{ steps.tags.outputs.FRONTEND_ROLLBACK }}',
+                        backend_rollback: '${{ steps.tags.outputs.BACKEND_ROLLBACK }}'
+                      }
+                    })
 
 
 
