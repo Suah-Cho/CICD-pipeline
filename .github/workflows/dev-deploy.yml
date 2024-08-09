@@ -6,6 +6,31 @@ on:
             - dev
 
 jobs:
+    check-tag:
+        runs-on: ubuntu-latest
+      
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+              
+            - name: image tags
+              id: tags
+              run: |
+                frontend_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/frontend:)\S+' resource/docker-compose.yml)
+                backend_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/backend:)\S+' resource/docker-compose.yml)
+                git checkout HEAD~1
+                frontend_previous_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/frontend:)\S+' resource/docker-compose.yml)
+                backend_previous_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/backend:)\S+' resource/docker-compose.yml)
+                echo "FRONTEND_TAG=${frontend_tag}" >> $GITHUB_ENV
+                echo "BACKEND_TAG=${backend_tag}" >> $GITHUB_ENV
+                echo "FRONTEND_PREVIOUS_TAG=${frontend_previous_tag}" >> $GITHUB_ENV
+                echo "BACKEND_PREVIOUS_TAG=${backend_previous_tag}" >> $GITHUB_ENV
+            
+            - name: Check if tags are rollback
+              run: |
+                printenv
+
+
     build:
         runs-on: ubuntu-latest
 
