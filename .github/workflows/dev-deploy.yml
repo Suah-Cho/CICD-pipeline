@@ -17,11 +17,11 @@ jobs:
               id: tags
               run: |
                 ls -al
-                frontend_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
-                backend_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                frontend_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
+                backend_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
                 git checkout HEAD~1
-                frontend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
-                backend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                frontend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
+                backend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
                 echo "FRONTEND_TAG=${frontend_tag}" >> $GITHUB_ENV
                 echo "BACKEND_TAG=${backend_tag}" >> $GITHUB_ENV
                 echo "FRONTEND_PREVIOUS_TAG=${frontend_previous_tag}" >> $GITHUB_ENV
