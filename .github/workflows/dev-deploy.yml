@@ -30,6 +30,7 @@ jobs:
                 echo "BACKEND_PREVIOUS_TAG=${backend_previous_tag}" >> $GITHUB_ENV
             
             - name: Check if tags are rollback
+              id: rollback_check
               run: |
                 if dpkg --compare-versions "${{ steps.tags.outputs.FRONTEND_TAG }}" lt "${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}"; then
                   echo "FRONTEND_ROLLBACK=true" >> $GITHUB_ENV
@@ -39,6 +40,7 @@ jobs:
                 fi
             
             - name: Trigger rollback.yml
+              if: ${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK == 'true' || steps.rollback_check.outputs.BACKEND_ROLLBACK == 'true' }}
               uses: actions/github-script@v4
               with:
                 script: |
@@ -50,8 +52,8 @@ jobs:
                       inputs: {
                         frontend_tag: '${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}',
                         backend_tag: '${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}',
-                        frontend_rollback: '${{ steps.tags.outputs.FRONTEND_ROLLBACK }}',
-                        backend_rollback: '${{ steps.tags.outputs.BACKEND_ROLLBACK }}'
+                        frontend_rollback: '${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK }}',
+                        backend_rollback: '${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}'
                       }
                     })
 
