@@ -31,8 +31,14 @@ jobs:
             
             - name: Check if tags are rollback
               run: |
-                echo "FRONTEND_TAG=${{ env.FRONTEND_TAG }}"
-                echo "BACKEND_TAG=${{ env.BACKEND_TAG }}"
+                if [ "${{ steps.tags.outputs.FRONTEND_TAG }}" < "${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}"] then
+                  echo "FRONTEND_ROLLBACK=true" >> $GITHUB_ENV
+                fi
+
+                if [ "${{ steps.tags.outputs.BACKEND_TAG }}" < "${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}"] then
+                  echo "BACKEND_ROLLBACK=true" >> $GITHUB_ENV
+
+
 
 
     build:
