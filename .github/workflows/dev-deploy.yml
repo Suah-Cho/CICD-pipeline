@@ -40,7 +40,6 @@ jobs:
                 fi
             
             - name: Trigger rollback.yml
-              if: ${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK == 'true' || steps.rollback_check.outputs.BACKEND_ROLLBACK == 'true' }}
               uses: actions/github-script@v4
               with:
                 script: |
