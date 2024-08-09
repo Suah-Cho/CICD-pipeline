@@ -16,11 +16,11 @@ jobs:
             - name: image tags
               id: tags
               run: |
-                frontend_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/frontend:)\S+' resource/docker-compose.yml)
-                backend_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/backend:)\S+' resource/docker-compose.yml)
+                frontend_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                backend_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
                 git checkout HEAD~1
-                frontend_previous_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/frontend:)\S+' resource/docker-compose.yml)
-                backend_previous_tag=$(grep -oP '(?<=image:\s*arctestsa.azurecr.io/backend:)\S+' resource/docker-compose.yml)
+                frontend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
+                backend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resource/docker-compose.yml | awk '{print $1}')
                 echo "FRONTEND_TAG=${frontend_tag}" >> $GITHUB_ENV
                 echo "BACKEND_TAG=${backend_tag}" >> $GITHUB_ENV
                 echo "FRONTEND_PREVIOUS_TAG=${frontend_previous_tag}" >> $GITHUB_ENV
@@ -28,7 +28,8 @@ jobs:
             
             - name: Check if tags are rollback
               run: |
-                printenv
+                echo "FRONTEND_TAG=${{ env.FRONTEND_TAG }}"
+                echo "BACKEND_TAG=${{ env.BACKEND_TAG }}"
 
 
     build:
