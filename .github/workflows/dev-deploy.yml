@@ -39,24 +39,24 @@ jobs:
                   echo "BACKEND_ROLLBACK=true" >> $GITHUB_ENV
                 fi
             
-                - name: Trigger rollback.yml
-                uses: actions/github-script@v4
-                with:
-                  script: |
-                    github.actions.createWorkflowDispatch({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      workflow_id: 'rollback.yml',
-                      ref: context.ref,
-                      inputs: {
-                        frontend_tag: '${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}',
-                        backend_tag: '${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}',
-                        frontend_rollback: '${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK }}',
-                        backend_rollback: '${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}'
-                      }
-                    })
-                env:
-                  GITHUB_TOKEN: ${{ secrets.PAT }}  # secrets.PAT을 직접 사용
+            - name: Trigger rollback.yml
+              uses: actions/github-script@v4
+              with:
+                script: |
+                  github.actions.createWorkflowDispatch({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    workflow_id: 'rollback.yml',
+                    ref: context.ref,
+                    inputs: {
+                      frontend_tag: '${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}',
+                      backend_tag: '${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}',
+                      frontend_rollback: '${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK }}',
+                      backend_rollback: '${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}'
+                    }
+                  })
+              env:
+                GITHUB_TOKEN: ${{ secrets.PAT }}  # secrets.PAT을 직접 사용
               
 
 
