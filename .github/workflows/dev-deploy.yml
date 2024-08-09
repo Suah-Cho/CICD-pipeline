@@ -43,7 +43,7 @@ jobs:
               uses: actions/github-script@v4
               with:
                 script: |
-                    github.rest.actions.createWorkflowDispatch({
+                    github.actions.createWorkflowDispatch({
                       owner: context.repo.owner,
                       repo: context.repo.repo,
                       workflow_id: 'rollback.yml',
