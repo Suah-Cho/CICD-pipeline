@@ -39,24 +39,23 @@ jobs:
                   echo "BACKEND_ROLLBACK=true" >> $GITHUB_ENV
                 fi
             
-            - name: Trigger rollback.yml
+            - name: Trigger Rollback Workflow
               uses: actions/github-script@v4
               with:
                 script: |
-                  github.actions.createWorkflowDispatch({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
+                  const github = require('@actions/github');
+                  github.rest.actions.createWorkflowDispatch({
+                    owner: github.context.repo.owner,
+                    repo: github.context.repo.repo,
                     workflow_id: 'rollback.yml',
-                    ref: context.ref,
+                    ref: 'main',
                     inputs: {
-                      frontend_tag: '${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}',
-                      backend_tag: '${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}',
-                      frontend_rollback: '${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK }}',
-                      backend_rollback: '${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}'
+                      frontend_tag: 'v1.2.3',
+                      backend_tag: 'v1.2.3',
+                      frontend_rollback: 'true',
+                      backend_rollback: 'false'
                     }
-                  })
-              env:
-                GITHUB_TOKEN: ${{ secrets.PAT }}  # secrets.PAT을 직접 사용
+                  });
               
 
 
