@@ -180,3 +180,86 @@ cloud "Azure" {
 
 
 => GPT 4o의 의견으로는 두 번의 Github Actions를 이용하는 것을 추천했습니다. 두 번의 Github Actions를 이용하는 것이 유연성(각각의 파이프라인을 독립적으로 관리하고 개선할 수 있다.), 확장성(프로젝트가 커짐에 따라 각 파이프라인을 개별적으로 확장할 수 있다.), 안정성(CI이후 CD 작업을 실행하므로, 더 안정적인 배포 프로세스를 유지할 수 있다.)등 장점을 가지고 있습니다. 팀의 규모가 작고 프로세스가 비교적 단순하다면, 단일 파이프라인으로 관리하는 것이 더 효율적일 수 있습니다. 
+
+
+
+## Rollback
+### 1. git push를 통해 rollback
+```plantuml
+@startuml
+
+actor dev
+
+rectangle "Github" {
+    rectangle cicd_repo [
+        cicd
+        ---
+        resource/docker-compose.yml
+    ]
+
+}
+
+rectangle "Github Actions" {
+    rectangle "deploy.yml" {
+        rectangle deploy [
+            deploy
+            ---
+            vm에 접속하여 docker-compose.yml을 git pull 한 후 배포
+        ]
+        rectangle check [
+            check rollback
+            ---
+            이미지 태그가 그 전이랑 비교하여 작은 경우 rollback.yml 실행
+        ]
+    }
+    
+    rectangle rollback [
+        rollback.yml
+        ---
+        이전 이미지 ACR에서 삭제
+    ]
+}
+
+cloud "Azure" {
+    rectangle "ACR" {
+        rectangle "frontend"
+        rectangle "backend"
+    }
+
+    rectangle "VM" {
+        rectangle "docker-compose" {
+            rectangle "frontend"
+            rectangle "backend"
+        }
+    }
+}
+
+dev --> cicd_repo : 이미지 태그값 변경
+cicd_repo -> "deploy.yml" : github actions trigger
+"deploy.yml" --> rollback : rollback 워크플로우 실행
+rollback --> ACR : 이미지 삭제
+"deploy.yml" --> VM : 롤백 이미지 배포
+
+@enduml
+
+```
+
+> 개발자가 직접 docker-compose.yml에서 이미지 태그를 변경하면 deploy.yml 워크플로우가 실행되며 롤백 이미지가 VM에서 배포된다. <br>
+> deploy.yml에서 롤백인지 확인하는 작업과 배포 작업이 동시에 일어난다. 롤백인지 확인하는 작업에서 롤백인 것으로 확인되면 rollback.yml을 트리거한다. rollback.yml에서는 이전 이미지 태그를 ACR에서 삭제한다.
+
+
+### 2. 수동으로 github actions 트리거
+```plantuml
+@startuml
+
+actor dev
+
+rectangle "Github" {
+    rectangle cicd [
+        
+    ]
+}
+
+@enduml
+
+```
