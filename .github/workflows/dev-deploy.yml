@@ -41,6 +41,7 @@ jobs:
             
             - name: Trigger Rollback Workflow
               run: |
+                printenv
                 curl -X POST \
                   -H "Accept: application/vnd.github+json" \
                   -H "Authorization: Bearer ${{ secrets.PAT }}" \
