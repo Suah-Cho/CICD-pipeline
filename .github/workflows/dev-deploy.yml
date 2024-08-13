@@ -45,7 +45,7 @@ jobs:
                   -H "Accept: application/vnd.github+json" \
                   -H "Authorization: Bearer ${{ secrets.PAT }}" \
                   https://api.github.com/repos/${{ github.repository }}/actions/workflows/rollback.yml/dispatches \
-                  -d '{"ref":"${{ github.ref }}", "inputs": {"frontend_tag": "${{ steps.tags.outputs.FRONTEND_TAG }}", "backend_tag": "${{ steps.tags.outputs.BACKEND_TAG }}", "frontend_rollback": "${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK }}", "backend_rollback": "${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}"}}'
+                  -d '{"ref":"${{ github.ref }}", "inputs": {"frontend_tag": "${FRONTEND_TAG}", "backend_tag": "${BACKEND_TAG}", "frontend_rollback": "${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK }}", "backend_rollback": "${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}"}}'
 
 
     build:
