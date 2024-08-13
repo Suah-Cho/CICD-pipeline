@@ -27,8 +27,8 @@ jobs:
             - name: Get Image Info
               id: image_info
               run : |
-                FRONTEND_TAG=$(grep 'image: arctestsa.azurecr.io/frontend:' docker-compose.yml | awk -F: '{print $3}')
-                BACKEND_TAG=$(grep 'image: arctestsa.azurecr.io/backend:' docker-compose.yml | awk -F: '{print $3}')
+                FRONTEND_TAG=$(grep 'image: arctestsa.azurecr.io/frontend:' resources/docker-compose.yml | awk -F: '{print $3}')
+                BACKEND_TAG=$(grep 'image: arctestsa.azurecr.io/backend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 echo "Frontend Image: $FRONTEND_IMAGE"
                 echo "Backend Image: $BACKEND_IMAGE"
 
