@@ -32,5 +32,5 @@ jobs:
                 echo "Frontend Image: $FRONTEND_IMAGE"
                 echo "Backend Image: $BACKEND_IMAGE"
                 
-              
+
             
