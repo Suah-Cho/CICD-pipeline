@@ -46,7 +46,7 @@ jobs:
                   github.actions.createWorkflowDispatch({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    workflow_id: 'rollback.yml',
+                    workflow_id: 'cicd/.github/workflows/rollback.yml',
                     ref: '${{ github.ref }}',
                     inputs: {
                       frontend_tag: '${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}',
