@@ -29,8 +29,8 @@ jobs:
               run : |
                 FRONTEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/frontend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 BACKEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/backend:' resources/docker-compose.yml | awk -F: '{print $3}')
-                echo "frontend_image=$FRONTEND_IMAGE" >> $GITHUB_ENV
-                echo "backend_image=$BACKEND_IMAGE" >> $GITHUB_ENV
+                echo "frontend_image=${FRONTEND_IMAGE}" >> $GITHUB_ENV
+                echo "backend_image=${BACKEND_IMAGE}" >> $GITHUB_ENV
 
             - name: Confirm Rollback Image tags and Delete Image
               run: |
