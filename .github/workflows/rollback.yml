@@ -26,8 +26,8 @@ jobs:
 
             - name: Image
               run : |
-                FRONTEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==1{print $2}')
-                BACKEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==2{print $2}')
+                FRONTEND_IMAGE=$(grep 'image:' cicd/resources/docker-compose.yml | awk 'NR==1{print $2}')
+                BACKEND_IMAGE=$(grep 'image:' cicd/resources/docker-compose.yml | awk 'NR==2{print $2}')
                 echo "Frontend Image: $FRONTEND_IMAGE"
                 echo "Backend Image: $BACKEND_IMAGE"
               
