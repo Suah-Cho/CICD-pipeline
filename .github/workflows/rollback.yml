@@ -41,7 +41,6 @@ jobs:
 
             - name: Confirm Rollback Image tags and Delete Image
               run: |
-                az acr login --name ${{ secrets.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
                 if dpkg --compare-versions "${{ github.event.inputs.frontend_tag }}" lt "${{ steps.image_info.outputs.frontend_image}}"; then
                     echo "Delete frontend image"
                     sed -i '/frontend:/,/backend:/{s|image: arctestsa.azurecr.io/frontend:.*|image: arctestsa.azurecr.io/frontend:'"${{ github.event.inputs.frontend_tag }}"'|}' resources/docker-compose.yml
