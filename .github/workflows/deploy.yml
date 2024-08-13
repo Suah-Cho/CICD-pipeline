@@ -14,31 +14,49 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+
+            - name: Create .env file
+              run: |
+                echo "API_MODE=${{ secrets.API_MODE }}" >> .env
+
+            - name: Move .env file to VM
+              uses: appleboy/scp-action@master
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USERNAME }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                source: ".env"
+                target: "/home/azureuser/cicd/resources/"
             
             - name: Deploy
               uses: appleboy/ssh-action@master
+              id: deploy
               with:
                 host: ${{ secrets.SSH_HOST }}
                 username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
                   az acr login --name ${{ secrets.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
+                  cat /home/azureuser/cicd/resources/.env
                   if [ -d '/home/azureuser/cicd' ]; then
                     cd /home/azureuser/cicd
-                    git pull 
+                    git pull origin main
                     cd resources
-                    docker compose up -d
+                    docker compose up -d 
                   else
                     git clone https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git /home/azureuser/cicd
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
-                  fi
-            
-            - name: Post to a Slack channel
-              id: slack
-              uses: slackapi/slack-github-action@v1.26.0
-              with:
-                channel-id: 배포
-                slack-message: "GitHub deploy result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  fi    
+    
+            - name: Notify message to Slack
+              if: always()
+              uses: rtCamp/action-slack-notify@v2
               env:
-                SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+                SLACK_CHANNEL: "github-actions-results"
+                SLACK_COLOR: "green"
+                SLACK_USERNAME: "Github CD"
+                SLACK_ICON: ":rocket:"
+                SLACK_TITLE: "CD Main"
+                SLACK_MESSAGE: ":rocket: Deploy Result: ${{ steps.deploy.conclusion }}\nCommit Message: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
