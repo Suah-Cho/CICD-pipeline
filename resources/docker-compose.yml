@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nginx:
-    image: arctestsa.azurecr.io/frontend:0.0.1-pre.4d9a8b4
+    image: arctestsa.azurecr.io/frontend:0.1.0
     ports:
       - 80:80
     restart: always
