@@ -9,21 +9,26 @@ on:
             backend_tag:
                 description: 'Backend tag'
                 required: true
-            frontend_rollback:
-                description: 'Frontend rollback'
-                required: true
-            backend_rollback:
-                description: 'Backend rollback'
-                required: true
+
 
 jobs:
     rollback:
         runs-on: ubuntu-latest
 
         steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
             - name: Checkout Input
               run: |
                 echo "Frontend tag: ${{ github.event.inputs.frontend_tag }}"
                 echo "Backend tag: ${{ github.event.inputs.backend_tag }}"
-                echo "Frontend rollback: ${{ github.event.inputs.frontend_rollback }}"
-                echo "Backend rollback: ${{ github.event.inputs.backend_rollback }}"
+
+            - name: Image
+              run : |
+                FRONTEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==1{print $2}')
+                BACKEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==2{print $2}')
+                echo "Frontend Image: $FRONTEND_IMAGE"
+                echo "Backend Image: $BACKEND_IMAGE"
+              
+            
