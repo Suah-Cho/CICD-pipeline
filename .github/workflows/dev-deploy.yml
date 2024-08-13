@@ -6,29 +6,109 @@ on:
             - dev
 
 jobs:
+    check-tag:
+        runs-on: ubuntu-latest
+      
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+              with:
+                fetch-depth: 0
+              
+            - name: image tags
+              id: tags
+              run: |
+                ls -al
+                frontend_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
+                backend_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
+                git checkout HEAD~1
+                frontend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
+                backend_previous_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
+                echo "FRONTEND_TAG=${frontend_tag}" >> $GITHUB_ENV
+                echo "BACKEND_TAG=${backend_tag}" >> $GITHUB_ENV
+                echo "FRONTEND_PREVIOUS_TAG=${frontend_previous_tag}" >> $GITHUB_ENV
+                echo "BACKEND_PREVIOUS_TAG=${backend_previous_tag}" >> $GITHUB_ENV
+            
+            - name: Check if tags are rollback
+              id: rollback_check
+              run: |
+                if dpkg --compare-versions "${{ steps.tags.outputs.FRONTEND_TAG }}" lt "${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}"; then
+                  echo "FRONTEND_ROLLBACK=true" >> $GITHUB_ENV
+                fi
+                if dpkg --compare-versions "${{ steps.tags.outputs.BACKEND_TAG }}" lt "${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}"; then
+                  echo "BACKEND_ROLLBACK=true" >> $GITHUB_ENV
+                fi
+            
+            - name: Trigger rollback.yml
+              uses: actions/github-script@v4
+              with:
+                script: |
+                  github.actions.createWorkflowDispatch({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    workflow_id: 'cicd/.github/workflows/rollback.yml',
+                    ref: '${{ github.ref }}',
+                    inputs: {
+                      frontend_tag: '${{ steps.tags.outputs.FRONTEND_PREVIOUS_TAG }}',
+                      backend_tag: '${{ steps.tags.outputs.BACKEND_PREVIOUS_TAG }}',
+                      frontend_rollback: '${{ steps.rollback_check.outputs.FRONTEND_ROLLBACK }}',
+                      backend_rollback: '${{ steps.rollback_check.outputs.BACKEND_ROLLBACK }}'
+                    }
+                  })
+                github-token: ${{ secrets.PAT }}
+              
+
+
+
     build:
         runs-on: ubuntu-latest
 
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+
+            - name: Create .env file
+              run: |
+                echo "API_MODE=${{ secrets.API_MODE }}" >> .env
+
+            - name: Move .env file to VM
+              uses: appleboy/scp-action@master
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USERNAME }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                source: ".env"
+                target: "/home/azureuser/cicd/resources/"
             
             - name: Deploy
               uses: appleboy/ssh-action@master
+              id: deploy
               with:
                 host: ${{ secrets.SSH_HOST }}
                 username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
                   az acr login --name ${{ secrets.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
+                  cat /home/azureuser/cicd/resources/.env
                   if [ -d '/home/azureuser/cicd' ]; then
                     cd /home/azureuser/cicd
-                    git pull 
+                    git pull origin dev
                     cd resources
-                    docker compose up -d
+                    docker compose up -d 
                   else
-                    git clone https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git /home/azureuser/cicd
+                    git clone -b dev https://${{ secrets.PAT }}@github.com/${{ github.repository }}.git /home/azureuser/cicd
                     cd /home/azureuser/cicd/resources
                     docker compose up -d
-                  fi
-                
+                  fi    
+    
+            - name: Notify message to Slack
+              if: always()
+              uses: rtCamp/action-slack-notify@v2
+              env:
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+                SLACK_CHANNEL: "github-actions-results"
+                SLACK_COLOR: "green"
+                SLACK_USERNAME: "Github CD"
+                SLACK_ICON: ":rocket:"
+                SLACK_TITLE: "CD dev"
+                SLACK_MESSAGE: ":rocket: Deploy Result: ${{ steps.deploy.conclusion }}\nCommit Message: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
