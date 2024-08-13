@@ -1,0 +1,34 @@
+name: Rollback Workflow
+
+on:
+    workflow_dispatch:
+        inputs:
+            frontend_tag:
+                description: 'Frontend tag'
+                required: true
+            backend_tag:
+                description: 'Backend tag'
+                required: true
+
+
+jobs:
+    rollback:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Checkout Input
+              run: |
+                echo "Frontend tag: ${{ github.event.inputs.frontend_tag }}"
+                echo "Backend tag: ${{ github.event.inputs.backend_tag }}"
+
+            - name: Image
+              run : |
+                FRONTEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==1{print $2}')
+                BACKEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==2{print $2}')
+                echo "Frontend Image: $FRONTEND_IMAGE"
+                echo "Backend Image: $BACKEND_IMAGE"
+              
+            
