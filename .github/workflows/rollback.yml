@@ -10,7 +10,6 @@ on:
                 description: 'Backend tag'
                 required: true
 
-
 jobs:
     rollback:
         runs-on: ubuntu-latest
