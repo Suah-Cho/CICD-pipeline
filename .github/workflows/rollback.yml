@@ -32,14 +32,25 @@ jobs:
                 echo "::set-output name=frontend_image::$FRONTEND_IMAGE"
                 echo "::set-output name=backend_image::$BACKEND_IMAGE"
             
-            - name: Confirm Rollback Image tags
+            - name: Confirm Rollback Image tags and Delete Image
               run: |
+                az acr login --name ${{ secrets.ACR_REGISTRY }} --username ${{ secrets.ACR_USERNAME }} --password ${{ secrets.ACR_PASSWORD }}
                 if dpkg --compare-versions "${{ github.event.inputs.frontend_tag }}" lt "${{ steps.image_info.outputs.frontend_image}}"; then
                     echo "Delete frontend image"
                     sed -i '/frontend:/,/backend:/{s|image: arctestsa.azurecr.io/frontend:.*|image: arctestsa.azurecr.io/frontend:'"${{ github.event.inputs.frontend_tag }}"'|}' resources/docker-compose.yml
+                    az acr repository delete --name ${{ secrets.ACR_REGISTRY }} --image frontend:${{ steps.image_info.outputs.frontend_image}}
                 fi
                 if dpkg --compare-versions "${{ github.event.inputs.backend_tag }}" lt "${{ steps.image_info.outputs.backend_image}}"; then
                     echo "Delete backend image"
                     sed -i '/croft-api-server:/,/restart: always/{s|image: arctestsa.azurecr.io/backend:.*|image: arctestsa.azurecr.io/backend:'"${{ github.event.inputs.backend_tag }}"'|}' resources/docker-compose.yml
+                    az acr repository delete --name ${{ secrets.ACR_REGISTRY }} --image backend:${{ steps.image_info.outputs.backend_image}}
                 fi
                 cat resources/docker-compose.yml
+
+            - name: Commit and Push Image Manifest File
+              run: |
+                git config user.email "sacho0929@gmail.com"
+                git config user.name "Suah-Cho"
+                git commit -am "Rollback frontend to ${{ github.event.inputs.frontend_tag }} and backend to ${{ github.event.inputs.backend_tag }}"
+                git push origin main
+
