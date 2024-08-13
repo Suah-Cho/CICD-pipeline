@@ -18,7 +18,6 @@ jobs:
             - name: image tags
               id: tags
               run: |
-                ls -al
                 frontend_tag=$(awk -F 'image: arctestsa.azurecr.io/frontend:' '/image: arctestsa.azurecr.io\/frontend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
                 backend_tag=$(awk -F 'image: arctestsa.azurecr.io/backend:' '/image: arctestsa.azurecr.io\/backend:/ {print $2}' resources/docker-compose.yml | awk '{print $1}')
                 git checkout HEAD~1
