@@ -1,4 +1,4 @@
-name: Rollback - Delete ACR image
+name: Rollback Workflow
 
 on:
     workflow_dispatch:
@@ -9,7 +9,6 @@ on:
             backend_tag:
                 description: 'Backend tag'
                 required: true
-
 
 jobs:
     rollback:
@@ -24,11 +23,13 @@ jobs:
                 echo "Frontend tag: ${{ github.event.inputs.frontend_tag }}"
                 echo "Backend tag: ${{ github.event.inputs.backend_tag }}"
 
-            - name: Image
+            - name: Get Image Info
+              id: image_info
               run : |
-                FRONTEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==1{print $2}')
-                BACKEND_IMAGE=$(grep 'image:' docker-compose.yml | awk 'NR==2{print $2}')
+                FRONTEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/frontend:' resources/docker-compose.yml | awk -F: '{print $3}')
+                BACKEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/backend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 echo "Frontend Image: $FRONTEND_IMAGE"
                 echo "Backend Image: $BACKEND_IMAGE"
+                
               
             
