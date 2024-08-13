@@ -1,14 +1,16 @@
 version: '3.8'
 
 services:
-  frontend:
-    image: arctestsa.azurecr.io/frontend:96565f2c157eb5e3b8fcf30c304aace6fb7df1a7
+  nginx:
+    image: arctestsa.azurecr.io/frontend:0.0.1
     ports:
       - 80:80
     restart: always
   
-  backend:
-    image: arctestsa.azurecr.io/backend:v0.2
+  croft-api-server:
+    image: arctestsa.azurecr.io/backend:1.0.4
     ports:
       - 8000:8000
     restart: always
+    env_file:
+      - /home/azureuser/cicd/resources/.env
