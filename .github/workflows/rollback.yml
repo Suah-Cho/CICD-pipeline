@@ -29,16 +29,16 @@ jobs:
               run : |
                 FRONTEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/frontend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 BACKEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/backend:' resources/docker-compose.yml | awk -F: '{print $3}')
-                echo "Frontend Image: $FRONTEND_IMAGE"
-                echo "Backend Image: $BACKEND_IMAGE"
+                echo "::set-output name=frontend_image::$FRONTEND_IMAGE"
+                echo "::set-output name=backend_image::$BACKEND_IMAGE"
             
             - name: Confirm Rollback Image tags
               run: |
-                if dpkg --compare-versions "${{ github.event.inputs.frontend_tag }}" lt "${{ steps.image_info.outputs.FRONTEND_IMAGE}}"; then
+                if dpkg --compare-versions "${{ github.event.inputs.frontend_tag }}" lt "${{ steps.image_info.outputs.frontend_image}}"; then
                     echo "Delete frontend image"
                     sed -i '/frontend:/,/backend:/{s|image: arctestsa.azurecr.io/frontend:.*|image: arctestsa.azurecr.io/frontend:'"${{ github.event.inputs.frontend_tag }}"'|}' resources/docker-compose.yml
                 fi
-                if dpkg --compare-versions "${{ github.event.inputs.backend_tag }}" lt "${{ steps.image_info.outputs.BACKEND_IMAGE}}"; then
+                if dpkg --compare-versions "${{ github.event.inputs.backend_tag }}" lt "${{ steps.image_info.outputs.backend_image}}"; then
                     echo "Delete backend image"
                     sed -i '/croft-api-server:/,/restart: always/{s|image: arctestsa.azurecr.io/backend:.*|image: arctestsa.azurecr.io/backend:'"${{ github.event.inputs.backend_tag }}"'|}' resources/docker-compose.yml
                 fi
