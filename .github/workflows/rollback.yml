@@ -18,6 +18,11 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
+              with:
+                repository: 'Suah-Cho/cicd'
+                ref: main
+                token: ${{ secrets.PAT }}
+                path: cicd
 
             - name: Checkout Input
               run: |
