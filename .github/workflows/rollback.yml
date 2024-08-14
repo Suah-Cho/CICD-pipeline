@@ -33,11 +33,8 @@ jobs:
                 echo "backend_image=$BACKEND_IMAGE" >> "$GITHUB_OUTPUT"
 
             - name: Login to Azure
-              uses: azure/docker-login@v1
-              with:
-                login-server: ${{ secrets.ACR_LOGIN_SERVER }}
-                username: ${{ secrets.ACR_USERNAME }}
-                password: ${{ secrets.ACR_PASSWORD }}
+              run: |
+                az login
 
             - name: Confirm Rollback Image tags and Delete Image
               run: |
