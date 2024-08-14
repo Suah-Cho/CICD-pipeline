@@ -22,7 +22,6 @@ jobs:
                 repository: 'Suah-Cho/cicd'
                 ref: main
                 token: ${{ secrets.PAT }}
-                path: cicd
 
             - name: Checkout Input
               run: |
