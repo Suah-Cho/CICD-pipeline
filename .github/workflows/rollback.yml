@@ -41,28 +41,31 @@ jobs:
                 echo "frontend_image=$FRONTEND_IMAGE" >> "$GITHUB_OUTPUT"
                 echo "backend_image=$BACKEND_IMAGE" >> "$GITHUB_OUTPUT"
 
-            - name: Login to Azure
-              run: |
-                az login
-
             - name: Confirm Rollback Image tags and Delete Image
               run: |
                 if dpkg --compare-versions "${{ github.event.inputs.frontend_tag }}" lt "${{ steps.image_info.outputs.frontend_image}}"; then
-                    echo "Delete frontend image"
                     sed -i '/frontend:/,/backend:/{s|image: arctestsa.azurecr.io/frontend:.*|image: arctestsa.azurecr.io/frontend:'"${{ github.event.inputs.frontend_tag }}"'|}' resources/docker-compose.yml
-                    az acr repository delete --name ${{ secrets.ACR_LOGIN_SERVER}} --image frontend:${{ steps.image_info.outputs.frontend_image}} --yes
                 fi
                 if dpkg --compare-versions "${{ github.event.inputs.backend_tag }}" lt "${{ steps.image_info.outputs.backend_image}}"; then
-                    echo "Delete backend image"
                     sed -i '/croft-api-server:/,/restart: always/{s|image: arctestsa.azurecr.io/backend:.*|image: arctestsa.azurecr.io/backend:'"${{ github.event.inputs.backend_tag }}"'|}' resources/docker-compose.yml
-                    az acr repository delete --name ${{ secrets.ACR_LOGIN_SERVER }} --image backend:${{ steps.image_info.outputs.backend_image}} --yes
                 fi
                 cat resources/docker-compose.yml
 
             - name: Commit and Push Image Manifest File
               run: |
                 git config user.email "sacho0929@gmail.com"
-                git config user.name "Suah-Cho"
+                git config user.name "Suah-Cho123"
                 git commit -am "Rollback frontend to ${{ github.event.inputs.frontend_tag }} and backend to ${{ github.event.inputs.backend_tag }}"
                 git push origin main
 
+            - name: Notify message to Slack
+              if: failure()
+              uses: rtCamp/action-slack-notify@v2
+              env:
+                SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+                SLACK_CHANNEL: "github-actions-results"
+                SLACK_COLOR: "green"
+                SLACK_USERNAME: "Github CD"
+                SLACK_ICON: ":rocket:"
+                SLACK_TITLE: "ROLLBACK"
+                SLACK_MESSAGE: ":rocket: Rollback Result: ${{ job.status }}\nRollback을 실패했습니다. 로그를 확인해주세요.\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
