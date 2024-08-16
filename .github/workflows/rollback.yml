@@ -6,6 +6,10 @@ on:
             frontend_tag:
                 description: 'Frontend tag'
                 required: true
+                type: choice
+                options:
+                  - 0.1.0
+                  - 0.1.1
             backend_tag:
                 description: 'Backend tag'
                 required: true
