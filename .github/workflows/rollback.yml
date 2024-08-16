@@ -25,7 +25,7 @@ jobs:
               uses: actions/checkout@v2
               with:
                 repository: 'Suah-Cho/cicd'
-                ref: main
+                ref: ${{github.ref}}
                 token: ${{ secrets.PAT }}
 
             - name: Checkout Input
