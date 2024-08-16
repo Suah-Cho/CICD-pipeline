@@ -36,7 +36,7 @@ jobs:
             - name: Get Image Info
               id: image_info
               run : |
-                echo ${{ github.head_ref }}
+                echo ${{ github.ref }}
                 FRONTEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/frontend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 BACKEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/backend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 echo "frontend_image=$FRONTEND_IMAGE" >> "$GITHUB_OUTPUT"
