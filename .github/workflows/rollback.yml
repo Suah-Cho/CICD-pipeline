@@ -36,6 +36,7 @@ jobs:
             - name: Get Image Info
               id: image_info
               run : |
+                echo ${{ github.branches }}
                 FRONTEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/frontend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 BACKEND_IMAGE=$(grep 'image: arctestsa.azurecr.io/backend:' resources/docker-compose.yml | awk -F: '{print $3}')
                 echo "frontend_image=$FRONTEND_IMAGE" >> "$GITHUB_OUTPUT"
@@ -54,7 +55,7 @@ jobs:
             - name: Commit and Push Image Manifest File
               run: |
                 git config user.email "sacho0929@gmail.com"
-                git config user.name "Suah-Cho123"
+                git config user.name "Suah-Cho"
                 git commit -am "Rollback frontend to ${{ github.event.inputs.frontend_tag }} and backend to ${{ github.event.inputs.backend_tag }}"
                 git push origin main
 
